@@ -14,8 +14,8 @@ var Enemy = function(enemyX,enemyY, speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    this.x = this.x += this.speed * dt;
-    if (this.x >= 400) {
+    this.x = this.x + this.speed * dt;
+    if (this.x >= 500) {
         this.x = -50;
         this.randomSpeed();
     }
@@ -28,7 +28,7 @@ Enemy.prototype.update = function(dt) {
     player.resetPlayerPosition();
 }
 
-    this.y = this.y += this.speed * dt;
+
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -46,11 +46,13 @@ Enemy.prototype.randomSpeed = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+
+var playerStartX = 200;
+var playerStartY = 400;
+
 var Player = function() {
     this.x = playerStartX;
     this.y = playerStartY;
-    var playerStartX = 200;
-    var playerStartY = 400;
     this.boundaryChecker = {
         leftBoundary: false,
         rightBoundary: false,
@@ -64,7 +66,7 @@ Player.prototype.update = function(){
 }
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resource.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
 Player.prototype.resetPlayerPosition = function() {
@@ -72,34 +74,33 @@ Player.prototype.resetPlayerPosition = function() {
     this.y = playerStartY;
     this.resetCheckPosition();
 }
-Player.prototype.handleInput = function(keyPressed) {
+Player.prototype.handleInput = function(playerControls) {
     var stepHorizontalLength = 100;
     var stepVerticalLength = 90;
     this.checkPosition();
 
-    if (keyPressed === 'left') {
+    if (playerControls === 'left') {
         if (this.boundaryChecker.leftBoundary) {
             return null;
         }
         this.x -= stepHorizontalLength;
-    } else if (keyPressed === 'right') {
+    } else if (playerControls === 'right') {
         if (this.boundaryChecker.rightBoundary) {
             return null;
         }
         this.x += stepHorizontalLength;
-    } else if (keyPressed === 'up') {
+    } else if (playerControls === 'up') {
         if (this.y === 40)  {
             this.resetPlayerPosition();
             return  null;
         }
         this.y -= stepVerticalLength;
-    } else if (keyPressed === 'down') {
+    } else if (playerControls=== 'down') {
         if (this.boundaryChecker.bottomBoundary) {
             return null;
         }
         this.y += stepVerticalLength;
     } else {
-        console.log('Wrong Key Pressed');
         return null;
     }
 }
@@ -111,7 +112,7 @@ Player.prototype.checkPosition = function () {
     } else if (this.x === 400) {
         this.setHorizontalBoundaryCheckerState(false, true);
     } else {
-        this.setHorizontalBoundaryCheckerState(false, true);
+        this.setHorizontalBoundaryCheckerState(false, false);
     }
     if (this.y === 400) {
         this.boundaryChecker.bottomBoundary = true;
@@ -125,7 +126,7 @@ Player.prototype.resetCheckPosition = function() {
     this.boundaryChecker.bottomBoundary = true;
 }
 
-Player.prototype.setHorizontalBoundaryCheckerState = function () {
+Player.prototype.setHorizontalBoundaryCheckerState = function (leftBoundaryState,rightBoundaryState) {
     this.boundaryChecker.leftBoundary = leftBoundaryState;
     this.boundaryChecker.rightBoundary = rightBoundaryState;
 }
@@ -134,9 +135,9 @@ Player.prototype.setHorizontalBoundaryCheckerState = function () {
 // Place the player object in a variable called player
 var allEnemies = [];
 
-for (var i = 0 < 3; i++) {
+for (var i = 0; i < 3; i++) {
     var tempSpeed = Math.floor(Math.random() * 5 + 1) *75;
-    allEnemies.push(new Enemy(-60, 60 + 85 * i tempSpeed));
+    allEnemies.push(new Enemy(-60, 60 + 85 * i, tempSpeed));
 }
 var player = new Player();
 
@@ -150,6 +151,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+    var playerControls = allowedKeys[e.keyCode];
+    player.handleInput(playerControls);
 });
